@@ -1,4 +1,4 @@
-import Express, { response } from 'express';
+import Express, { response, Router } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import Cors from 'cors';
 import jwt_decode from 'jwt-decode';
@@ -30,7 +30,7 @@ app.use(Cors());
     console.log('hicierron get en /')
   });
 
-  app.post('/producto/nuevo/accesorios', (req, res) => {
+  app.post('/producto/nuevo', (req, res) => {
     console.log(req);
     const datosProducto = req.body;
     console.log('llaves: ', Object.keys(datosProducto));
@@ -58,16 +58,18 @@ app.use(Cors());
   });
 
   app.get('/productos/recetas', (req, res) => {
-    console.log('alguien hizo get en la ruta /productos/accesorios');
+    let ingredient = req.query.ingredientes;
+    console.log('alguien hizo get en la ruta /productos/recetas');
     baseDeDatos
       .collection('recetas')
-      .find()
+      .find( {ingredientes:ingredient })
       .limit(50)
       .toArray((err, result) => {
         if (err) {
           res.status(500).send('Error consultando los usuarios');
         } else {
           res.json(result);
+          console.log(result)
         }
       });
   });
