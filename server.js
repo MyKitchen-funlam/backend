@@ -40,7 +40,8 @@ app.use(Cors());
         Object.keys(datosProducto).includes('ingredientes') &&
         Object.keys(datosProducto).includes('pasos') 
       ) {
-        baseDeDatos.collection('recetas').insertOne(datosProducto, (err, result) => {
+        baseDeDatos.collection('recetas')
+        .insertOne(datosProducto, (err, result) => {
           if (err) {
             console.error(err);
             res.sendStatus(500);
@@ -62,8 +63,7 @@ app.use(Cors());
     console.log('alguien hizo get en la ruta /productos/recetas');
     baseDeDatos
       .collection('recetas')
-      .find( {ingredientes:ingredient })
-      .limit(50)
+      .find( {$text:{$search:ingredient}} )
       .toArray((err, result) => {
         if (err) {
           res.status(500).send('Error consultando los usuarios');
@@ -72,6 +72,21 @@ app.use(Cors());
           console.log(result)
         }
       });
+  });
+
+  app.get('/recetas/id=:id', (req, res) => {
+    const id = req.params.id;
+    console.log('ID:', id);
+    console.log('alguien hizo get en la ruta', `/recetas/${id}`);
+    baseDeDatos
+    .collection('recetas')
+    .findOne(new ObjectId(id), (err, result) => {
+      if (err){
+        res.status(500).send('Error consultando los usuarios');
+      } else {
+        res.json(result);
+      }
+    })
   });
 
   const main = () => {
